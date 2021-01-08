@@ -3,11 +3,19 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
+
+        Formulas formulas = new Formulas();
+
         Scanner in = new Scanner(System.in);
         String LON = in.next();
         String LAT = in.next();
         int N = in.nextInt();
         in.nextLine();
+        /*
+         integerdan sonra string alınırsa, enter'ı stringi atamaya çalışıyor. Integerdan sonra string alacakken
+         bir boşluk bırakıp bu sorunu ortadan kaldırıyoruz
+         */
+
 
         List<String> defibrilateurs = new ArrayList<String>();
         for (int i = 0; i < N; i++) {
@@ -16,18 +24,17 @@ public class Main {
         }
 
         String answer = "";
-        double distance = Double.MAX_VALUE; // aşağıdakiler tekrar ettiği için daha iyisini yapmamız lazım REFACTORING
+        double distance = Double.MAX_VALUE;
 
-        double longitudeUser = Math.toRadians(Double.parseDouble(LON.replace("," , ".")));
-        double latitudeUser = Math.toRadians(Double.parseDouble(LAT.replace("," , ".")));
+        double longitudeUser = formulas.converter(LON);
+        double latitudeUser = formulas.converter(LAT);
 
         for (String defib : defibrilateurs) {
-            double longitudeDefib = Math.toRadians(Double.parseDouble(defib.split(";")[4].replace("," , "."))); //4. indedksin  null olup olmaması kontrol edilecek böyle bir indeks var mı?
-            double latitudeDefib = Math.toRadians(Double.parseDouble(defib.split(";")[5].replace("," , ".")));
+            double longitudeDefib = formulas.converter(defib.split(";")[4]);
+            double latitudeDefib = formulas.converter(defib.split(";")[5]);
 
-            double x = (longitudeDefib - longitudeUser) * Math.cos((latitudeUser + latitudeDefib) / 2);
-            double y = (latitudeDefib - latitudeUser);
-            double d = (Math.sqrt(Math.pow(x,2) + Math.pow(y,2))) * 6371;
+
+            double d = formulas.findDistance(longitudeDefib,latitudeDefib,longitudeUser,latitudeUser);
 
             if (d < distance) {
                 distance = d;
@@ -35,10 +42,6 @@ public class Main {
             }
         }
 
-
         System.out.println(answer);
-
-        // Write an answer using System.out.println()
-        // To debug: System.err.println("Debug messages...");
     }
 }
